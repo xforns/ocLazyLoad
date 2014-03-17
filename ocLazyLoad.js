@@ -120,6 +120,19 @@
 							moduleCache.push(name);
 							loadDependencies(name, function() {
 								register(providers, moduleCache, $log);
+								if(config.element && config.element!==undefined) {
+									var ngel = angular.element(config.element);
+									var scope = ngel.scope();
+									var injector = ngel.injector();
+									injector.invoke(function($rootScope, $compile) {
+										var compile = injector.get('$compile');
+										var childScope = scope.$new();
+										var parentEl = ngel.parent();
+										var content = parentEl.contents();
+										var linkFn = $compile(content);
+										linkFn(childScope);
+									});
+								}
 								$timeout(function() {
 									deferred.resolve(config);
 								});
